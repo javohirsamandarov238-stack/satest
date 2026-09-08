@@ -156,10 +156,8 @@ function Home({
     <div className="wrap">
       <h1>{TOTALS.all.toLocaleString()} questions, drawn from your own files</h1>
       <p className="lede" style={{ marginTop: 14 }}>
-        Every one of the {QUESTIONS.filter((q) => q.section === 'Reading and Writing').length.toLocaleString()}{' '}
-        Reading and Writing questions is checked against the official key, {TOTALS.explained} of them with a
-        written explanation. The {TOTALS.unverified} Math questions are there to practise but stay out of
-        your accuracy until their answers are checked.
+        Reading and Writing plus Math, every answer checked against the official key.{' '}
+        {TOTALS.explained} of them also carry a written explanation, and more are being added.
       </p>
 
       {stats.attempted > 0 && (

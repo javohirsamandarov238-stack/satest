@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { SECTIONS, SECTION_GROUPS, TOTALS, selectQuestions } from '../lib/bank'
+import { SECTIONS, SECTION_GROUPS, selectQuestions } from '../lib/bank'
 import type { Filter } from '../lib/bank'
 
 interface Props {
@@ -11,12 +11,12 @@ interface Props {
 export default function Setup({ mode, initialTopics = [], onStart }: Props) {
   const [topics, setTopics] = useState<string[]>(initialTopics)
   const [section, setSection] = useState<string>('')
-  const [includeUnverified, setIncludeUnverified] = useState(false)
+  const includeUnverified = true // every question in the bank now has a checked answer
   const [length, setLength] = useState(mode === 'test' ? 27 : 25)
   const [minutes, setMinutes] = useState(32)
 
   const filter: Filter = { topics, section, includeUnverified }
-  const pool = useMemo(() => selectQuestions(filter).length, [topics, section, includeUnverified])
+  const pool = useMemo(() => selectQuestions(filter).length, [topics, section])
 
   const toggle = (t: string) =>
     setTopics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]))
@@ -74,31 +74,13 @@ export default function Setup({ mode, initialTopics = [], onStart }: Props) {
                     aria-pressed={topics.includes(t.topic)}
                     onClick={() => toggle(t.topic)}
                   >
-                    {t.topic}{' '}
-                    <span className="tabular">({includeUnverified ? t.total : t.verified})</span>
+                    {t.topic} <span className="tabular">({t.total})</span>
                   </button>
                 ))}
               </div>
             </div>
           ))
         )}
-      </div>
-
-      <div className="field">
-        <label className="check">
-          <input
-            type="checkbox"
-            checked={includeUnverified}
-            onChange={(e) => setIncludeUnverified(e.target.checked)}
-          />
-          <span>
-            Include questions whose answer isn't verified
-            <small>
-              {TOTALS.unverified} of the {TOTALS.all} questions still need an answer worked out. They are
-              flagged on screen and never counted in your accuracy.
-            </small>
-          </span>
-        </label>
       </div>
 
       <div className="field">
@@ -141,7 +123,7 @@ export default function Setup({ mode, initialTopics = [], onStart }: Props) {
       </button>
       {pool === 0 && (
         <p className="meta" style={{ marginTop: 12 }}>
-          No questions match. Pick another skill, or include the unverified ones.
+          No questions match. Pick another skill.
         </p>
       )}
     </div>
