@@ -1,4 +1,5 @@
 import type { Format, Letter, Question } from '../lib/types'
+import { IconCheck, IconClose, IconDoc, IconFlag } from './Icons'
 
 const LETTERS: Letter[] = ['A', 'B', 'C', 'D']
 
@@ -11,8 +12,6 @@ function figureSrc(name: string): string {
     typeof window === 'undefined'
       ? undefined
       : (window as unknown as { __FIGS?: Record<string, string>; __FIGROOT?: string })
-  // __FIGROOT lets a build point image paths somewhere other than /figures,
-  // for hosting layouts where the folders sit elsewhere.
   const root = w?.__FIGROOT ?? `${import.meta.env.BASE_URL}figures/`
   return w?.__FIGS?.[name] ?? root + name
 }
@@ -33,14 +32,10 @@ export function isCorrect(q: Question, answer: Letter | string | null): boolean 
   return normaliseTyped(String(answer)) === normaliseTyped(String(q.correctAnswer))
 }
 
-function offersLetters(f: Format) {
-  return f === 'mcq' || f === 'unknown'
-}
-function offersTyping(f: Format) {
-  return f === 'spr' || f === 'unknown'
-}
+const offersLetters = (f: Format) => f === 'mcq' || f === 'unknown'
+const offersTyping = (f: Format) => f === 'spr' || f === 'unknown'
 
-/* ---------- the body of a question ---------- */
+/* ── the question itself ─────────────────────────────────────────── */
 
 export function QuestionBody({ q }: { q: Question }) {
   if (q.image) {
@@ -58,30 +53,35 @@ export function QuestionBody({ q }: { q: Question }) {
             <img src={figureSrc(q.figure)} alt="Graph or table accompanying this question" />
           </div>
         )}
-        {q.passage.map((block, i) => (
-          <p key={i} className={block.i === 1 ? 'indent' : undefined}>
-            {block.t}
-          </p>
-        ))}
+        {q.passage.map((block, i) =>
+          block.i === 2 ? (
+            <p key={i} className="passage-label">
+              {block.t}
+            </p>
+          ) : (
+            <p key={i} className={block.i === 1 ? 'indent' : undefined}>
+              {block.t}
+            </p>
+          )
+        )}
       </div>
       <p className="stem">{q.stem}</p>
     </>
   )
 }
 
-/* ---------- answering ---------- */
+/* ── answering ───────────────────────────────────────────────────── */
 
 interface AnswerProps {
   q: Question
   selected: Letter | string | null
   onSelect: (answer: Letter | string) => void
-  /** true once the student has checked, or after a test is submitted */
   revealed: boolean
   disabled?: boolean
 }
 
 export function AnswerInput({ q, selected, onSelect, revealed, disabled }: AnswerProps) {
-  const compact = Boolean(q.image) // the choice text lives inside the image
+  const compact = Boolean(q.image) // choice text lives inside the image
   const isLetter = LETTERS.includes(selected as Letter)
 
   return (
@@ -107,7 +107,7 @@ export function AnswerInput({ q, selected, onSelect, revealed, disabled }: Answe
                 disabled={disabled || revealed}
                 onClick={() => onSelect(letter)}
               >
-                <span className="choice-letter" aria-hidden="true">
+                <span className="bubble" aria-hidden="true">
                   {letter}
                 </span>
                 {!compact && <span>{q.choices[letter]}</span>}
@@ -126,7 +126,7 @@ export function AnswerInput({ q, selected, onSelect, revealed, disabled }: Answe
             id={`typed-${q.id}`}
             type="text"
             autoComplete="off"
-            placeholder="e.g. 46, 3/4, -0.5"
+            placeholder="46, 3/4, −0.5"
             disabled={disabled || revealed}
             value={isLetter ? '' : String(selected ?? '')}
             onChange={(e) => onSelect(e.target.value)}
@@ -137,20 +137,17 @@ export function AnswerInput({ q, selected, onSelect, revealed, disabled }: Answe
   )
 }
 
-/* ---------- feedback ---------- */
+/* ── feedback ────────────────────────────────────────────────────── */
 
 export function Verdict({ q, selected }: { q: Question; selected: Letter | string | null }) {
   if (q.correctAnswer === null) {
     return (
       <div className="verdict verdict-unknown">
-        <h3>Not verified yet</h3>
-        <div className="verdict-body">
-          <p>
-            This question came out of the source PDF without an answer key, and its answer hasn't been
-            worked out and checked yet. You answered {selected ? `"${selected}"` : 'nothing'}. Nothing is
-            recorded against your accuracy for this one.
-          </p>
-        </div>
+        <div className="verdict-head">Answer not verified yet</div>
+        <p className="verdict-body">
+          This question came out of the source PDF without an answer key, and its answer hasn't been
+          worked out and checked yet. Nothing is recorded against your accuracy for it.
+        </p>
       </div>
     )
   }
@@ -158,13 +155,18 @@ export function Verdict({ q, selected }: { q: Question; selected: Letter | strin
   const right = isCorrect(q, selected)
   return (
     <div className={`verdict ${right ? 'verdict-correct' : 'verdict-wrong'}`}>
-      <h3>{right ? 'Correct' : `Not quite — the answer is ${q.correctAnswer}`}</h3>
-      <div className="verdict-body">
-        <p>{q.explanation}</p>
+      <div className="verdict-head">
+        {right ? <IconCheck size={14} /> : <IconClose size={14} />}
+        {right ? 'Correct' : `The answer is ${q.correctAnswer}`}
       </div>
+      <p className="verdict-body">
+        {q.explanation ?? 'The answer is confirmed against the official key. A written explanation for this one is still being added.'}
+      </p>
     </div>
   )
 }
+
+/* ── header ──────────────────────────────────────────────────────── */
 
 export function QuestionHeader({
   q,
@@ -181,24 +183,43 @@ export function QuestionHeader({
 }) {
   return (
     <>
-      <div className="qhead">
-        <div>
-          <div className="qhead-topic">{q.topic}</div>
-          <div className="qhead-meta">
-            {q.section} · {q.domain}
-            {q.difficulty ? ` · ${q.difficulty.toLowerCase()}` : ''} · question {index + 1} of {total}
-          </div>
+      <div className="qtop">
+        <div className="qcrumb">
+          <strong>{q.topic}</strong>
+          <i>/</i>
+          <span>{q.section}</span>
+          {q.difficulty && (
+            <>
+              <i>/</i>
+              <span>{q.difficulty.toLowerCase()}</span>
+            </>
+          )}
+          {q.needsReview && <span className="tag tag-warn">Unverified</span>}
         </div>
-        <div className="row">
-          {q.needsReview && <span className="pill pill-warn">Answer not verified</span>}
-          <button className="btn btn-sm btn-quiet" onClick={onToggleFlag} aria-pressed={flagged}>
-            {flagged ? 'Unflag' : 'Flag for later'}
+        <div className="row" style={{ gap: 4 }}>
+          <span className="qcount tabular">
+            <b>{index + 1}</b> of {total}
+          </span>
+          <button className="flagbtn" onClick={onToggleFlag} aria-pressed={flagged}>
+            <IconFlag size={14} filled={flagged} />
+            {flagged ? 'Flagged' : 'Flag'}
           </button>
         </div>
       </div>
-      <div className="progressline" aria-hidden="true">
+      <div className="track" aria-hidden="true">
         <i style={{ width: `${((index + 1) / total) * 100}%` }} />
       </div>
     </>
+  )
+}
+
+/* ── footer ──────────────────────────────────────────────────────── */
+
+export function SourceNote({ q }: { q: Question }) {
+  return (
+    <div className="source">
+      <IconDoc size={13} />
+      {q.sourceFile.replace(/\.pdf$/i, '')} · question {q.sourceQuestionNumber} · {q.id}
+    </div>
   )
 }

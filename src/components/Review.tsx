@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import type { Attempt, Question } from '../lib/types'
 import { BY_ID, TOPICS } from '../lib/bank'
 import { latestByQuestion } from '../lib/store'
-import { AnswerInput, QuestionBody, QuestionHeader, Verdict } from './Question'
+import { IconLeft, IconRight } from './Icons'
+import { AnswerInput, QuestionBody, QuestionHeader, SourceNote, Verdict } from './Question'
 
 type Outcome = 'incorrect' | 'correct' | 'unanswered' | 'flagged' | 'unverified' | 'all'
 
@@ -65,15 +66,16 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
         <Verdict q={q} selected={attempt?.choice ?? null} />
         <div className="actions">
           <button className="btn" disabled={open === 0} onClick={() => setOpen(open - 1)}>
-            Previous
+            <IconLeft size={14} /> Previous
           </button>
           <button className="btn" disabled={open === rows.length - 1} onClick={() => setOpen(open + 1)}>
-            Next
+            Next <IconRight size={14} />
           </button>
-          <button className="btn btn-quiet" onClick={() => setOpen(null)}>
+          <button className="btn btn-quiet" onClick={() => setOpen(null)} style={{ marginLeft: 'auto' }}>
             Back to the list
           </button>
         </div>
+        <SourceNote q={q} />
       </div>
     )
   }
@@ -81,11 +83,12 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
   return (
     <div className="wrap">
       <h1>Review</h1>
-      <p className="lede" style={{ marginTop: 8 }}>
-        Everything you've answered, sorted with the most recent first.
+      <p className="lede" style={{ marginTop: 10 }}>
+        Everything you've answered, most recent first. Work through what you got wrong — that's where
+        the marks are.
       </p>
 
-      <hr className="divider" />
+      <hr className="rule" />
 
       <div className="field">
         <label>Show</label>
@@ -125,7 +128,7 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
         </div>
       ) : (
         <>
-          <p className="eyebrow tabular">{rows.length} questions</p>
+          <p className="meta tabular" style={{ marginBottom: 4 }}>{rows.length} questions</p>
           <div>
             {rows.map(({ q, attempt }, i) => (
               <div className="reviewitem" key={q.id}>
@@ -139,7 +142,7 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
                   )}
                   {attempt?.correct === null && <span>answer not verified</span>}
                   {!attempt && <span>not attempted</span>}
-                  {flagged.includes(q.id) && <span style={{ color: 'var(--flag)' }}>flagged</span>}
+                  {flagged.includes(q.id) && <span className="mark-flag">flagged</span>}
                 </div>
                 <div className="reviewitem-q">{q.stem || `${q.topic} — see question image`}</div>
                 <button className="btn btn-sm" onClick={() => setOpen(i)}>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Letter, Question } from '../lib/types'
-import { AnswerInput, QuestionBody, QuestionHeader, Verdict, isCorrect } from './Question'
+import { AnswerInput, QuestionBody, QuestionHeader, SourceNote, Verdict, isCorrect } from './Question'
 import { pct } from '../lib/store'
 
 interface Props {
@@ -76,14 +76,14 @@ export default function TestMode({
     return (
       <div className="wrap">
         <h1>Test finished</h1>
-        <div className="stat-strip" style={{ marginTop: 18 }}>
+        <div className="stats">
           <div>
             <div className="stat-value">{pct(results.accuracy)}</div>
             <div className="stat-label">accuracy on graded questions</div>
           </div>
           <div>
             <div className="stat-value tabular">
-              {results.right}<span style={{ color: 'var(--muted)' }}>/{results.graded}</span>
+              {results.right}<small>/{results.graded}</small>
             </div>
             <div className="stat-label">correct</div>
           </div>
@@ -99,10 +99,10 @@ export default function TestMode({
           )}
         </div>
 
-        <hr className="divider" />
+        <hr className="rule" />
         <h2>Every question</h2>
-        <p className="eyebrow" style={{ marginTop: 6, marginBottom: 12 }}>
-          Open any one to read the passage again with the answer and reasoning.
+        <p className="meta" style={{ marginTop: 6, marginBottom: 14 }}>
+          Open any one to read it again with the answer and reasoning.
         </p>
         <div>
           {questions.map((q, i) => {
@@ -139,7 +139,7 @@ export default function TestMode({
             )
           })}
         </div>
-        <hr className="divider" />
+        <hr className="rule" />
         <button className="btn btn-primary" onClick={onExit}>
           Back to overview
         </button>
@@ -163,6 +163,7 @@ export default function TestMode({
         <QuestionBody q={q} />
         <AnswerInput q={q} selected={picked[q.id] ?? null} onSelect={() => {}} revealed disabled />
         <Verdict q={q} selected={picked[q.id] ?? null} />
+        <SourceNote q={q} />
         <div className="actions">
           <button className="btn" disabled={reviewIndex === 0} onClick={() => setReviewIndex(reviewIndex - 1)}>
             Previous
@@ -189,11 +190,14 @@ export default function TestMode({
   return (
     <div className="wrap">
       <div className="testbar">
-        <div className={`clock ${left < 300 ? 'low' : ''}`}>{clock(left)}</div>
-        <div className="eyebrow tabular">
+        <div>
+          <div className={`clock ${left < 300 ? 'low' : ''}`}>{clock(left)}</div>
+          <div className="clock-label">time remaining</div>
+        </div>
+        <div className="meta tabular">
           {answeredCount} of {questions.length} answered
         </div>
-        <button className="btn btn-sm btn-primary" onClick={submit}>
+        <button className="btn btn-outline btn-sm" onClick={submit}>
           Submit test
         </button>
       </div>
@@ -239,8 +243,8 @@ export default function TestMode({
         </button>
       </div>
 
-      <hr className="divider" />
-      <div className="eyebrow">Jump to a question</div>
+      <hr className="rule" />
+      <div className="meta">Jump to a question</div>
       <div className="navgrid">
         {questions.map((item, i) => (
           <button

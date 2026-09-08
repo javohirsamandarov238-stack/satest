@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Letter, Question } from '../lib/types'
-import { AnswerInput, QuestionBody, QuestionHeader, Verdict } from './Question'
+import { AnswerInput, QuestionBody, QuestionHeader, SourceNote, Verdict } from './Question'
 
 interface Props {
   questions: Question[]
@@ -65,22 +65,20 @@ export default function Practice({ questions, flagged, onToggleFlag, onRecord, o
             Next question
           </button>
         )}
-        <button className="btn" onClick={() => go(-1)} disabled={index === 0}>
+        <button className="btn btn-quiet" onClick={() => go(-1)} disabled={index === 0}>
           Previous
         </button>
-        {!last && (
-          <button className="btn" onClick={() => go(1)}>
+        {!last && !isChecked && (
+          <button className="btn btn-quiet" onClick={() => go(1)}>
             Skip
           </button>
         )}
-        <button className="btn btn-quiet" onClick={onExit}>
+        <button className="btn btn-quiet" onClick={onExit} style={{ marginLeft: 'auto' }}>
           End run
         </button>
       </div>
 
-      <p className="eyebrow" style={{ marginTop: 26 }}>
-        {q.sourceFile} · question {q.sourceQuestionNumber} · id {q.id}
-      </p>
+      <SourceNote q={q} />
     </div>
   )
 }

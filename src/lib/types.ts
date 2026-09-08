@@ -11,8 +11,8 @@ export type Format = 'mcq' | 'spr' | 'unknown'
 export interface PassageBlock {
   /** text of the block */
   t: string
-  /** 0 = flush left prose, 1 = indented block (notes list, quoted verse, Text 1 / Text 2) */
-  i: 0 | 1
+  /** 0 = prose, 1 = indented block (notes list, quoted verse), 2 = a "Text 1" style label */
+  i: 0 | 1 | 2
 }
 
 export interface Question {

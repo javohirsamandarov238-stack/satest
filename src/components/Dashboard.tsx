@@ -1,6 +1,8 @@
 import type { Attempt } from '../lib/types'
-import { TOTALS } from '../lib/bank'
+import { QUESTIONS, TOTALS } from '../lib/bank'
 import { computeStats, pct } from '../lib/store'
+
+const SECTION_OF = new Map(QUESTIONS.map((q) => [q.id, q.section]))
 
 export default function Dashboard({
   attempts,
@@ -15,50 +17,53 @@ export default function Dashboard({
     return (
       <div className="wrap">
         <h1>Progress</h1>
-        <p className="lede" style={{ marginTop: 8, marginBottom: 22 }}>
+        <p className="lede" style={{ marginTop: 12, marginBottom: 28 }}>
           Nothing recorded yet.
         </p>
         <div className="empty">
-          Your accuracy, your strongest and weakest skills, and your recent form all appear here once
-          you've answered a few questions. Progress is stored in this browser, so it survives a refresh.
+          Answer a few questions and this page fills in: how accurate you are overall, which skills are
+          carrying you, which ones need the work, and how the last few sessions went. Everything is kept
+          in this browser, so a refresh won't lose it.
         </div>
       </div>
     )
   }
 
-  const weakest = s.byTopic.filter((t) => t.attempted >= 3).slice(-3).reverse()
-  const strongest = s.byTopic.filter((t) => t.attempted >= 3).slice(0, 3)
+  const bySection = ['Reading and Writing', 'Math'].map((name) => {
+    const rows = attempts.filter((a) => SECTION_OF.get(a.id) === name && a.correct !== null)
+    const correct = rows.filter((a) => a.correct).length
+    return { name, attempted: rows.length, correct, accuracy: rows.length ? correct / rows.length : null }
+  })
+
+  const ranked = s.byTopic.filter((t) => t.attempted >= 3)
+  const weakest = ranked.slice(-3).reverse()
+  const strongest = ranked.slice(0, 3)
   const graded = s.recent.filter((a) => a.correct !== null)
 
   return (
     <div className="wrap">
       <h1>Progress</h1>
 
-      <div className="stat-strip" style={{ marginTop: 20 }}>
+      <div className="stats">
         <div>
           <div className="stat-value">{pct(s.accuracy)}</div>
-          <div className="stat-label">overall accuracy</div>
+          <div className="stat-label">accuracy</div>
         </div>
         <div>
-          <div className="stat-value tabular">{s.correct}</div>
-          <div className="stat-label">correct</div>
-        </div>
-        <div>
-          <div className="stat-value tabular">{s.incorrect}</div>
-          <div className="stat-label">incorrect</div>
-        </div>
-        <div>
-          <div className="stat-value tabular">{s.unanswered}</div>
-          <div className="stat-label">left blank</div>
+          <div className="stat-value tabular">
+            {s.correct}
+            <small>/{s.correct + s.incorrect}</small>
+          </div>
+          <div className="stat-label">correct answers</div>
         </div>
         <div>
           <div className="stat-value tabular">{s.streak}</div>
-          <div className="stat-label">correct in a row now, best {s.bestStreak}</div>
+          <div className="stat-label">in a row now · best {s.bestStreak}</div>
         </div>
         <div>
           <div className="stat-value tabular">
             {s.distinctQuestions}
-            <span style={{ color: 'var(--muted)', fontSize: '1rem' }}>/{TOTALS.all}</span>
+            <small>/{TOTALS.all}</small>
           </div>
           <div className="stat-label">questions seen</div>
         </div>
@@ -66,94 +71,100 @@ export default function Dashboard({
 
       {graded.length > 0 && (
         <>
-          <hr className="divider" />
+          <hr className="rule" />
           <h2>Recent form</h2>
-          <p className="eyebrow" style={{ marginTop: 6, marginBottom: 10 }}>
-            Your last {graded.length} graded answers, oldest on the left.
+          <p className="meta" style={{ marginTop: 6, marginBottom: 14 }}>
+            Your last {graded.length} graded answers, oldest first
           </p>
           <div className="sparks">
             {graded.map((a, i) => (
-              <i key={i} className={a.correct ? 'hit' : 'miss'} style={{ height: a.correct ? 26 : 13 }} />
+              <i key={i} className={a.correct ? 'hit' : 'miss'} />
             ))}
           </div>
         </>
       )}
 
-      <hr className="divider" />
-      <h2>By domain</h2>
-      <div className="ledger" style={{ marginTop: 10 }}>
-        {s.byDomain.map((b) => (
-          <div className="ledger-row" key={b.name} style={{ cursor: 'default' }}>
-            <div>
-              <div className="ledger-name">{b.name}</div>
-              <div className="ledger-sub tabular">
-                {b.correct} of {b.attempted} correct
-              </div>
-            </div>
-            <div className="bar-cell">
-              <div className="bar bar-correct">
-                <i style={{ width: `${(b.accuracy ?? 0) * 100}%` }} />
-              </div>
-            </div>
-            <div className="ledger-num tabular">{pct(b.accuracy)}</div>
-          </div>
-        ))}
-      </div>
-
-      <hr className="divider" />
-      <h2>By skill</h2>
-      <div className="ledger" style={{ marginTop: 10 }}>
-        {s.byTopic.map((b) => (
-          <div className="ledger-row" key={b.name} style={{ cursor: 'default' }}>
-            <div>
-              <div className="ledger-name">{b.name}</div>
-              <div className="ledger-sub tabular">
-                {b.correct} of {b.attempted} correct
-              </div>
-            </div>
-            <div className="bar-cell">
-              <div className="bar bar-correct">
-                <i style={{ width: `${(b.accuracy ?? 0) * 100}%` }} />
-              </div>
-            </div>
-            <div className="ledger-num tabular">{pct(b.accuracy)}</div>
-          </div>
-        ))}
-      </div>
-
-      {(weakest.length > 0 || strongest.length > 0) && (
+      {bySection.some((b) => b.attempted > 0) && (
         <>
-          <hr className="divider" />
+          <hr className="rule" />
+          <h2>By section</h2>
+          <div style={{ marginTop: 10 }}>
+            {bySection
+              .filter((b) => b.attempted > 0)
+              .map((b) => (
+                <div className="ledger-row" key={b.name}>
+                  <div>
+                    <div className="ledger-name">{b.name}</div>
+                    <div className="ledger-sub tabular">
+                      {b.correct} of {b.attempted} correct
+                    </div>
+                  </div>
+                  <div className="bar-cell">
+                    <div className="bar bar-done">
+                      <i style={{ width: `${(b.accuracy ?? 0) * 100}%` }} />
+                    </div>
+                  </div>
+                  <div className="ledger-num tabular">{pct(b.accuracy)}</div>
+                </div>
+              ))}
+          </div>
+        </>
+      )}
+
+      <hr className="rule" />
+      <h2>By skill</h2>
+      <div style={{ marginTop: 10 }}>
+        {s.byTopic.map((b) => (
+          <div className="ledger-row" key={b.name}>
+            <div>
+              <div className="ledger-name">{b.name}</div>
+              <div className="ledger-sub tabular">
+                {b.correct} of {b.attempted} correct
+              </div>
+            </div>
+            <div className="bar-cell">
+              <div className="bar bar-done">
+                <i style={{ width: `${(b.accuracy ?? 0) * 100}%` }} />
+              </div>
+            </div>
+            <div className="ledger-num tabular">{pct(b.accuracy)}</div>
+          </div>
+        ))}
+      </div>
+
+      {ranked.length > 0 && (
+        <>
+          <hr className="rule" />
           <h2>Where to spend your time</h2>
-          <div className="row" style={{ alignItems: 'flex-start', gap: 44, marginTop: 12 }}>
+          <div className="row" style={{ alignItems: 'flex-start', gap: 56, marginTop: 16 }}>
             {weakest.length > 0 && (
               <div>
-                <h3 style={{ marginBottom: 6 }}>Weakest</h3>
+                <h3 style={{ marginBottom: 8 }}>Weakest</h3>
                 {weakest.map((t) => (
-                  <p key={t.name} style={{ margin: '0 0 4px', fontSize: '0.9375rem' }}>
-                    {t.name} <span className="eyebrow tabular">{pct(t.accuracy)}</span>
+                  <p key={t.name} style={{ margin: '0 0 5px', fontSize: '0.875rem' }}>
+                    {t.name} <span className="meta tabular">{pct(t.accuracy)}</span>
                   </p>
                 ))}
               </div>
             )}
             {strongest.length > 0 && (
               <div>
-                <h3 style={{ marginBottom: 6 }}>Strongest</h3>
+                <h3 style={{ marginBottom: 8 }}>Strongest</h3>
                 {strongest.map((t) => (
-                  <p key={t.name} style={{ margin: '0 0 4px', fontSize: '0.9375rem' }}>
-                    {t.name} <span className="eyebrow tabular">{pct(t.accuracy)}</span>
+                  <p key={t.name} style={{ margin: '0 0 5px', fontSize: '0.875rem' }}>
+                    {t.name} <span className="meta tabular">{pct(t.accuracy)}</span>
                   </p>
                 ))}
               </div>
             )}
           </div>
-          <p className="eyebrow" style={{ marginTop: 10 }}>
-            Skills with at least three graded answers.
+          <p className="meta" style={{ marginTop: 14 }}>
+            Skills with at least three graded answers
           </p>
         </>
       )}
 
-      <hr className="divider" />
+      <hr className="rule" />
       <button
         className="btn"
         onClick={() => {

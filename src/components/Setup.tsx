@@ -24,13 +24,13 @@ export default function Setup({ mode, initialTopics = [], onStart }: Props) {
   return (
     <div className="wrap">
       <h1>{mode === 'test' ? 'Set up a timed test' : 'Set up a practice run'}</h1>
-      <p className="lede" style={{ marginTop: 8 }}>
+      <p className="lede" style={{ marginTop: 12 }}>
         {mode === 'test'
           ? 'Answers stay hidden until you submit, exactly like the real module.'
-          : 'One question at a time, with the answer and reasoning as soon as you check.'}
+          : 'One question at a time, with the answer and the reasoning the moment you check.'}
       </p>
 
-      <hr className="divider" />
+      <hr className="rule" />
 
       <div className="field">
         <label>Section</label>
@@ -64,9 +64,7 @@ export default function Setup({ mode, initialTopics = [], onStart }: Props) {
         {SECTION_GROUPS.filter((g) => !section || g.section === section).map((g) =>
           g.domains.map((d) => (
             <div key={d.domain} style={{ marginBottom: 14 }}>
-              <div className="eyebrow" style={{ marginBottom: 6 }}>
-                {g.section} · {d.domain}
-              </div>
+              <div className="domain-head">{d.domain}</div>
               <div className="chips">
                 {d.topics.map((t) => (
                   <button
@@ -115,7 +113,7 @@ export default function Setup({ mode, initialTopics = [], onStart }: Props) {
             onChange={(e) => setLength(Math.max(1, Number(e.target.value) || 1))}
             style={{ width: 90 }}
           />
-          <span className="eyebrow tabular">{pool} available with these settings</span>
+          <span className="meta tabular">{pool} available</span>
         </div>
       </div>
 
@@ -142,8 +140,8 @@ export default function Setup({ mode, initialTopics = [], onStart }: Props) {
         {mode === 'test' ? 'Start the test' : 'Start practising'}
       </button>
       {pool === 0 && (
-        <p className="eyebrow" style={{ marginTop: 10 }}>
-          No questions match. Choose another skill, or include the unverified ones.
+        <p className="meta" style={{ marginTop: 12 }}>
+          No questions match. Pick another skill, or include the unverified ones.
         </p>
       )}
     </div>

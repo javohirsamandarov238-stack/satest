@@ -25,6 +25,7 @@ export interface TopicInfo {
   section: string
   total: number
   verified: number
+  explained: number
 }
 
 export const TOPICS: TopicInfo[] = (() => {
@@ -32,11 +33,12 @@ export const TOPICS: TopicInfo[] = (() => {
   for (const q of QUESTIONS) {
     let e = map.get(q.topic)
     if (!e) {
-      e = { topic: q.topic, domain: q.domain, section: q.section, total: 0, verified: 0 }
+      e = { topic: q.topic, domain: q.domain, section: q.section, total: 0, verified: 0, explained: 0 }
       map.set(q.topic, e)
     }
     e.total += 1
     if (!q.needsReview) e.verified += 1
+    if (q.explanation) e.explained += 1
   }
   return [...map.values()].sort((a, b) => {
     const d = DOMAIN_ORDER.indexOf(a.domain) - DOMAIN_ORDER.indexOf(b.domain)
@@ -57,11 +59,13 @@ export const SECTION_GROUPS = SECTIONS.map((section) => ({
   domains: DOMAINS.filter((d) => d.section === section),
   total: QUESTIONS.filter((q) => q.section === section).length,
   verified: QUESTIONS.filter((q) => q.section === section && !q.needsReview).length,
+  explained: QUESTIONS.filter((q) => q.section === section && q.explanation).length,
 })).filter((g) => g.domains.length > 0)
 
 export const TOTALS = {
   all: QUESTIONS.length,
   verified: QUESTIONS.filter((q) => !q.needsReview).length,
+  explained: QUESTIONS.filter((q) => q.explanation).length,
   get unverified() {
     return this.all - this.verified
   },
