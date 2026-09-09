@@ -29,7 +29,12 @@ export function normaliseTyped(value: string): string {
 export function isCorrect(q: Question, answer: Letter | string | null): boolean | null {
   if (q.correctAnswer === null || answer === null || answer === '') return null
   if (q.format === 'mcq') return answer === q.correctAnswer
-  return normaliseTyped(String(answer)) === normaliseTyped(String(q.correctAnswer))
+  // grid-ins may list several acceptable forms, e.g. "15.5, 31/2"
+  const accepted = String(q.correctAnswer)
+    .split(',')
+    .map((a) => normaliseTyped(a))
+    .filter(Boolean)
+  return accepted.includes(normaliseTyped(String(answer)))
 }
 
 const offersLetters = (f: Format) => f === 'mcq' || f === 'unknown'
@@ -157,7 +162,7 @@ export function Verdict({ q, selected }: { q: Question; selected: Letter | strin
     <div className={`verdict ${right ? 'verdict-correct' : 'verdict-wrong'}`}>
       <div className="verdict-head">
         {right ? <IconCheck size={14} /> : <IconClose size={14} />}
-        {right ? 'Correct' : `The answer is ${q.correctAnswer}`}
+        {right ? 'Correct' : `The answer is ${String(q.correctAnswer).split(',')[0].trim()}`}
       </div>
       <p className="verdict-body">
         {q.explanation ?? 'The answer is confirmed against the official key. A written explanation for this one is still being added.'}
