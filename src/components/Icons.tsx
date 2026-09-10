@@ -124,3 +124,10 @@ export function Monogram({ size = 26 }: { size?: number }) {
     </svg>
   )
 }
+
+/** Trailing arrow used on primary actions. */
+export const IconArrow = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M2.5 8h11M9.5 4l4 4-4 4" />
+  </Svg>
+)

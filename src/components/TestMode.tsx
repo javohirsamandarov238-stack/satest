@@ -74,33 +74,33 @@ export default function TestMode({
 
   if (submitted && reviewIndex === null) {
     return (
-      <div className="wrap">
-        <h1>Test finished</h1>
+      <div className="wrap-read">
+        <h1 className="h-page">Test finished</h1>
         <div className="stats">
           <div>
-            <div className="stat-value">{pct(results.accuracy)}</div>
+            <div className="stat-figure">{pct(results.accuracy)}</div>
             <div className="stat-label">accuracy on graded questions</div>
           </div>
           <div>
-            <div className="stat-value tabular">
+            <div className="stat-figure tabular">
               {results.right}<small>/{results.graded}</small>
             </div>
             <div className="stat-label">correct</div>
           </div>
           <div>
-            <div className="stat-value tabular">{results.blank}</div>
+            <div className="stat-figure tabular">{results.blank}</div>
             <div className="stat-label">left blank</div>
           </div>
           {results.ungraded > 0 && (
             <div>
-              <div className="stat-value tabular">{results.ungraded}</div>
+              <div className="stat-figure tabular">{results.ungraded}</div>
               <div className="stat-label">unverified, not graded</div>
             </div>
           )}
         </div>
 
         <hr className="rule" />
-        <h2>Every question</h2>
+        <h2 className="h-sec">Every question</h2>
         <p className="meta" style={{ marginTop: 6, marginBottom: 14 }}>
           Open any one to read it again with the answer and reasoning.
         </p>
@@ -122,7 +122,7 @@ export default function TestMode({
                   <span>{q.topic}</span>
                   <span
                     className={
-                      state === 'correct' ? 'mark-correct' : state === 'wrong' ? 'mark-wrong' : undefined
+                      state === 'correct' ? 'mark-good' : state === 'wrong' ? 'mark-bad' : undefined
                     }
                   >
                     {state === 'correct' && `correct (${choice})`}
@@ -152,7 +152,7 @@ export default function TestMode({
   if (submitted && reviewIndex !== null) {
     const q = questions[reviewIndex]
     return (
-      <div className="wrap">
+      <div className="wrap-read">
         <QuestionHeader
           q={q}
           index={reviewIndex}
@@ -188,7 +188,7 @@ export default function TestMode({
   const q = questions[index]
 
   return (
-    <div className="wrap">
+    <div className="wrap-read">
       <div className="testbar">
         <div>
           <div className={`clock ${left < 300 ? 'low' : ''}`}>{clock(left)}</div>

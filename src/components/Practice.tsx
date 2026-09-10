@@ -31,7 +31,7 @@ export default function Practice({ questions, flagged, onToggleFlag, onRecord, o
   }
 
   return (
-    <div className="wrap">
+    <div className="wrap-read">
       <QuestionHeader
         q={q}
         index={index}
@@ -55,6 +55,9 @@ export default function Practice({ questions, flagged, onToggleFlag, onRecord, o
         {!isChecked ? (
           <button className="btn btn-primary" disabled={!selected} onClick={check}>
             Check answer
+            <span className="arrow" aria-hidden="true">
+              →
+            </span>
           </button>
         ) : last ? (
           <button className="btn btn-primary" onClick={onExit}>
@@ -63,6 +66,9 @@ export default function Practice({ questions, flagged, onToggleFlag, onRecord, o
         ) : (
           <button className="btn btn-primary" onClick={() => go(1)}>
             Next question
+            <span className="arrow" aria-hidden="true">
+              →
+            </span>
           </button>
         )}
         <button className="btn btn-quiet" onClick={() => go(-1)} disabled={index === 0}>

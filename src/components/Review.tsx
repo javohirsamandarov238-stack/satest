@@ -53,7 +53,7 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
   if (open !== null && rows[open]) {
     const { q, attempt } = rows[open]
     return (
-      <div className="wrap">
+      <div className="wrap-read">
         <QuestionHeader
           q={q}
           index={open}
@@ -81,8 +81,8 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
   }
 
   return (
-    <div className="wrap">
-      <h1>Review</h1>
+    <div className="wrap-read">
+      <h1 className="h-page">Review</h1>
       <p className="lede" style={{ marginTop: 10 }}>
         Everything you've answered, most recent first. Work through what you got wrong — that's where
         the marks are.
@@ -134,15 +134,15 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
               <div className="reviewitem" key={q.id}>
                 <div className="reviewitem-meta">
                   <span>{q.topic}</span>
-                  {attempt?.correct === true && <span className="mark-correct">correct ({attempt.choice})</span>}
+                  {attempt?.correct === true && <span className="dot mark-good">correct · {attempt.choice}</span>}
                   {attempt?.correct === false && (
-                    <span className="mark-wrong">
+                    <span className="dot mark-bad">
                       chose {attempt.choice ?? '—'}, answer is {q.correctAnswer}
                     </span>
                   )}
                   {attempt?.correct === null && <span>answer not verified</span>}
                   {!attempt && <span>not attempted</span>}
-                  {flagged.includes(q.id) && <span className="mark-flag">flagged</span>}
+                  {flagged.includes(q.id) && <span className="dot mark-flag">flagged</span>}
                 </div>
                 <div className="reviewitem-q">{q.stem || `${q.topic} — see question image`}</div>
                 <button className="btn btn-sm" onClick={() => setOpen(i)}>

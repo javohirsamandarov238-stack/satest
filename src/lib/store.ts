@@ -5,7 +5,7 @@ import { isCorrect } from '../components/Question'
 
 const KEY = 'sat-rw-progress-v1'
 
-const EMPTY: Progress = { attempts: [], flagged: [], theme: 'light' }
+const EMPTY: Progress = { attempts: [], flagged: [], theme: 'dark' }
 
 function read(): Progress {
   try {
@@ -15,7 +15,7 @@ function read(): Progress {
     return {
       attempts: Array.isArray(parsed.attempts) ? parsed.attempts : [],
       flagged: Array.isArray(parsed.flagged) ? parsed.flagged : [],
-      theme: parsed.theme === 'dark' ? 'dark' : 'light',
+      theme: parsed.theme === 'light' ? 'light' : 'dark',
     }
   } catch {
     return EMPTY

@@ -147,8 +147,8 @@ export function AnswerInput({ q, selected, onSelect, revealed, disabled }: Answe
 export function Verdict({ q, selected }: { q: Question; selected: Letter | string | null }) {
   if (q.correctAnswer === null) {
     return (
-      <div className="verdict verdict-unknown">
-        <div className="verdict-head">Answer not verified yet</div>
+      <div className="verdict verdict-warn">
+        <div className="verdict-head">Not verified yet</div>
         <p className="verdict-body">
           This question came out of the source PDF without an answer key, and its answer hasn't been
           worked out and checked yet. Nothing is recorded against your accuracy for it.
@@ -159,14 +159,19 @@ export function Verdict({ q, selected }: { q: Question; selected: Letter | strin
 
   const right = isCorrect(q, selected)
   return (
-    <div className={`verdict ${right ? 'verdict-correct' : 'verdict-wrong'}`}>
+    <div className={`verdict ${right ? 'verdict-good' : 'verdict-bad'}`}>
       <div className="verdict-head">
-        {right ? <IconCheck size={14} /> : <IconClose size={14} />}
-        {right ? 'Correct' : `The answer is ${String(q.correctAnswer).split(',')[0].trim()}`}
+        {right ? <IconCheck size={13} /> : <IconClose size={13} />}
+        {right ? 'Correct' : 'Not quite'}
       </div>
       <p className="verdict-body">
-        {q.explanation ?? 'The answer is confirmed against the official key. A written explanation for this one is still being added.'}
+        {q.explanation ??
+          'This answer is confirmed against the official key. A written explanation for this one is still being added.'}
       </p>
+      <div className="verdict-answer">
+        <span className="h-sub">Correct answer</span>
+        <strong>{String(q.correctAnswer).split(',')[0].trim()}</strong>
+      </div>
     </div>
   )
 }
@@ -189,27 +194,27 @@ export function QuestionHeader({
   return (
     <>
       <div className="qtop">
-        <div className="qcrumb">
-          <strong>{q.topic}</strong>
-          <i>/</i>
-          <span>{q.section}</span>
-          {q.difficulty && (
-            <>
-              <i>/</i>
-              <span>{q.difficulty.toLowerCase()}</span>
-            </>
-          )}
-          {q.needsReview && <span className="tag tag-warn">Unverified</span>}
+        <div>
+          <div className="qlabel">
+            Question <b>{String(index + 1).padStart(3, '0')}</b> / {String(total).padStart(3, '0')}
+          </div>
+          <div className="qcrumb" style={{ marginTop: 8 }}>
+            <span>{q.topic}</span>
+            <i>·</i>
+            <span>{q.section}</span>
+            {q.difficulty && (
+              <>
+                <i>·</i>
+                <span>{q.difficulty.toLowerCase()}</span>
+              </>
+            )}
+            {q.needsReview && <span className="tag tag-warn">Unverified</span>}
+          </div>
         </div>
-        <div className="row" style={{ gap: 4 }}>
-          <span className="qcount tabular">
-            <b>{index + 1}</b> of {total}
-          </span>
-          <button className="flagbtn" onClick={onToggleFlag} aria-pressed={flagged}>
-            <IconFlag size={14} filled={flagged} />
-            {flagged ? 'Flagged' : 'Flag'}
-          </button>
-        </div>
+        <button className="flagbtn" onClick={onToggleFlag} aria-pressed={flagged}>
+          <IconFlag size={14} filled={flagged} />
+          {flagged ? 'Flagged' : 'Flag'}
+        </button>
       </div>
       <div className="track" aria-hidden="true">
         <i style={{ width: `${((index + 1) / total) * 100}%` }} />
