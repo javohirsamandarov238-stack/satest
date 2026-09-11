@@ -10,9 +10,11 @@
 
 :root {
   /* type */
-  --display: "Instrument Serif", Georgia, serif;
+  /* Bricolage carries display and interface; Newsreader still does the
+     long-form reading, where a grotesque would tire the eye. */
+  --display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
   --read: "Newsreader", Charter, Georgia, serif;
-  --sans: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  --sans: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
 
   /* space (4px base) */
   --s1: 4px;
@@ -111,8 +113,9 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--sans);
+  font-variation-settings: "opsz" 14;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.58;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -212,6 +215,8 @@ a {
 }
 
 .wordmark {
+  font-weight: 700;
+  font-variation-settings: "opsz" 24, "wdth" 90;
   display: inline-flex;
   align-items: flex-start;
   gap: 5px;
@@ -320,14 +325,17 @@ a {
 
 .hero-line {
   font-family: var(--display);
-  font-size: clamp(2.75rem, 1.2rem + 6.6vw, 5.75rem);
-  line-height: 1.02;
-  letter-spacing: -0.028em;
+  font-size: clamp(2.5rem, 1.1rem + 6.1vw, 5.25rem);
+  font-weight: 600;
+  font-variation-settings: "opsz" 96, "wdth" 92;
+  line-height: 0.96;
+  letter-spacing: -0.042em;
   color: var(--ink);
 }
 .hero-line em {
   display: block;
   font-style: normal;
+  font-weight: 400;
   color: var(--ink-3);
 }
 
@@ -344,15 +352,19 @@ a {
 }
 
 .h-page {
+  font-weight: 600;
+  font-variation-settings: "opsz" 72, "wdth" 94;
   font-family: var(--display);
   font-size: clamp(2.25rem, 1.4rem + 3.2vw, 3.25rem);
   line-height: 1.06;
   letter-spacing: -0.024em;
 }
 .h-sec {
+  font-weight: 600;
+  font-variation-settings: "opsz" 40;
   font-family: var(--display);
-  font-size: 1.75rem;
-  letter-spacing: -0.018em;
+  font-size: 1.625rem;
+  letter-spacing: -0.03em;
   line-height: 1.15;
 }
 .h-sub {
@@ -434,6 +446,8 @@ a {
   transition: stroke-dashoffset 1.4s var(--ease);
 }
 .ring-figure {
+  font-weight: 600;
+  font-variation-settings: "opsz" 72, "wdth" 90;
   font-family: var(--display);
   font-size: 3.25rem;
   line-height: 1;
@@ -460,10 +474,12 @@ a {
   gap: var(--s9);
 }
 .stat-figure {
+  font-weight: 600;
+  font-variation-settings: "opsz" 96, "wdth" 90;
   font-family: var(--display);
   font-size: clamp(2.75rem, 1.8rem + 3vw, 4rem);
   line-height: 0.95;
-  letter-spacing: -0.032em;
+  letter-spacing: -0.045em;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
 }
@@ -958,7 +974,7 @@ button.ledger-row:hover {
 .verdict-answer strong {
   font-family: var(--display);
   font-size: 1.75rem;
-  font-weight: 400;
+  font-weight: 700;
   color: var(--accent);
   letter-spacing: -0.01em;
 }
@@ -1048,6 +1064,8 @@ input[type="number"] {
   border-bottom: 1px solid var(--line);
 }
 .clock {
+  font-weight: 600;
+  font-variation-settings: "opsz" 72, "wdth" 88;
   font-family: var(--display);
   font-size: 3rem;
   line-height: 1;
