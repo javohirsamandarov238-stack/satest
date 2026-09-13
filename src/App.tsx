@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import type { Filter } from './lib/bank'
-import { QUESTIONS, SECTION_GROUPS, TOTALS, selectQuestions, shuffle } from './lib/bank'
+import type { Filter, Order } from './lib/bank'
+import { QUESTIONS, SECTION_GROUPS, TOTALS, orderQuestions, selectQuestions, shuffle } from './lib/bank'
 import { computeStats, pct, useProgress } from './lib/store'
 import { stagger, useCountUp } from './lib/motion'
 import type { Letter, Question } from './lib/types'
@@ -49,9 +49,9 @@ export default function App() {
     setView(v)
   }
 
-  function start(filter: Filter, length: number, minutes: number) {
-    const pool = shuffle(selectQuestions(filter)).slice(0, length)
-    setSession({ questions: pool, minutes })
+  function start(filter: Filter, length: number, minutes: number, order: Order) {
+    const drawn = shuffle(selectQuestions(filter)).slice(0, length)
+    setSession({ questions: orderQuestions(drawn, order), minutes })
   }
 
   function practiseTopic(topic: string) {
@@ -71,9 +71,13 @@ export default function App() {
         <u />
       </div>
       <header className="topbar">
-        <span className="wordmark">
+        <button
+          className="wordmark"
+          onClick={() => goto('home')}
+          aria-label="SATest — back to overview"
+        >
           SATest<i />
-        </span>
+        </button>
         <nav className="nav">
           {NAV.map(({ key, label }) => (
             <button

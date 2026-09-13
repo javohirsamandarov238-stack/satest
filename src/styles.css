@@ -388,13 +388,23 @@ a {
   margin: 0 auto;
 }
 
-/* Rule 10 — focused task drops all chrome */
-.focused .topbar,
+/* During a session the chrome recedes, but the wordmark stays so you can
+   always get back to Overview. Nav, theme control and tab bar go. */
 .focused .tabbar {
   display: none;
 }
+.focused .topbar {
+  border-bottom: 0;
+  background: none;
+  backdrop-filter: none;
+  padding-top: 16px;
+  padding-bottom: 0;
+}
+.focused .topbar .nav {
+  display: none;
+}
 .focused .main {
-  padding-top: 48px;
+  padding-top: 32px;
 }
 
 .tabbar {
@@ -1207,4 +1217,14 @@ input[type="number"] {
 .stat-line .label {
   display: block;
   margin-top: 8px;
+}
+
+/* The wordmark is a control: it returns to Overview from any screen. */
+button.wordmark {
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--t1);
+}
+button.wordmark:hover {
+  opacity: 0.75;
 }

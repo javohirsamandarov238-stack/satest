@@ -76,14 +76,39 @@ export interface Filter {
   topics: string[]
   /** empty string means both sections */
   section: string
+  /** empty array means every difficulty */
+  difficulties: string[]
   includeUnverified: boolean
+}
+
+export const DIFFICULTIES = ['Easy', 'Medium', 'Hard'] as const
+
+/** How a session is ordered once the pool is drawn. */
+export type Order = 'mixed' | 'easy-first' | 'hard-first'
+
+const RANK: Record<string, number> = { Easy: 0, Medium: 1, Hard: 2 }
+
+export function orderQuestions(items: Question[], order: Order): Question[] {
+  if (order === 'mixed') return items
+  const dir = order === 'easy-first' ? 1 : -1
+  // stable sort, so the shuffle still varies the order within a difficulty
+  return items
+    .map((q, i) => ({ q, i }))
+    .sort((a, b) => {
+      const ra = RANK[a.q.difficulty ?? ''] ?? 1
+      const rb = RANK[b.q.difficulty ?? ''] ?? 1
+      return ra === rb ? a.i - b.i : (ra - rb) * dir
+    })
+    .map((x) => x.q)
 }
 
 export function selectQuestions(filter: Filter): Question[] {
   const set = new Set(filter.topics)
+  const diffs = new Set(filter.difficulties)
   return QUESTIONS.filter((q) => {
     if (filter.section && q.section !== filter.section) return false
     if (set.size > 0 && !set.has(q.topic)) return false
+    if (diffs.size > 0 && !diffs.has(q.difficulty ?? '')) return false
     if (!filter.includeUnverified && q.needsReview) return false
     return true
   })
