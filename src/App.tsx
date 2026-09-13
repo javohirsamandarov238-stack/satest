@@ -60,8 +60,16 @@ export default function App() {
     setView('practice')
   }
 
+  const focused = (view === 'practice' || view === 'test') && session !== null
+
   return (
-    <div className="shell">
+    <div className={focused ? 'shell focused' : 'shell'}>
+      <div className="ambient" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+        <u />
+      </div>
       <header className="topbar">
         <span className="wordmark">
           SATest<i />
@@ -151,11 +159,11 @@ function Home({
     <div className="wrap">
       <div className="hero">
         <div>
-          <h1 className="hero-line rise">
+          <h1 className="d-hero rise">
             Your SAT practice.
-            <em>Getting sharper.</em>
+            <em style={{ display: 'block', color: 'var(--text-3)' }}>Getting sharper.</em>
           </h1>
-          <p className="hero-meta rise" style={{ animationDelay: '80ms' }}>
+          <p className="hero-sub rise" style={{ animationDelay: '80ms' }}>
             <b>{TOTALS.all.toLocaleString()} questions</b> · Reading &amp; Writing + Math ·{' '}
             <b>{TOTALS.explained.toLocaleString()}</b> with a written explanation. Drawn from your
             own files.
@@ -189,7 +197,7 @@ function Home({
             />
           </svg>
           <div>
-            <div className="ring-figure">
+            <div className="ring-figure figure-num">
               {seenCount.toLocaleString()}
               <span>/{TOTALS.all.toLocaleString()}</span>
             </div>
@@ -206,21 +214,17 @@ function Home({
 
       {stats.attempted > 0 && (
         <>
-          <span className="h-sub">Your progress</span>
-          <div className="stats" style={{ marginTop: 28 }}>
-            <div>
-              <div className="stat-figure">{pct(stats.accuracy)}</div>
-              <div className="stat-label">overall accuracy</div>
-            </div>
-            <div>
-              <div className="stat-figure tabular">{stats.correct.toLocaleString()}</div>
-              <div className="stat-label">correct answers</div>
-            </div>
-            <div>
-              <div className="stat-figure tabular">{stats.streak}</div>
-              <div className="stat-label">current streak</div>
-            </div>
+          <span className="label">Your progress</span>
+          <div className="headline-stat" style={{ marginTop: 20 }}>
+            <span className="figure-num">{pct(stats.accuracy)}</span>
+            <span className="label">overall accuracy</span>
           </div>
+          <p className="support" style={{ marginTop: 16, maxWidth: '54ch' }}>
+            {stats.correct.toLocaleString()} correct of{' '}
+            {(stats.correct + stats.incorrect).toLocaleString()} graded ·{' '}
+            {stats.distinctQuestions.toLocaleString()} questions seen · {stats.streak} in a row now,
+            best {stats.bestStreak}
+          </p>
           <hr className="rule" />
         </>
       )}
@@ -229,14 +233,14 @@ function Home({
         {SECTION_GROUPS.map((g) => (
           <section className="ledger-section" key={g.section}>
             <div className="ledger-head">
-              <h2 className="h-sec">{g.section}</h2>
+              <h2 className="d-md">{g.section}</h2>
               <span className="meta tabular">
                 {g.verified === g.total ? 'all answers checked' : `${g.verified} of ${g.total} answered`}
               </span>
             </div>
             {g.domains.map((d) => (
           <div className="ledger-group" key={d.domain}>
-            <span className="h-sub">{d.domain}</span>
+            <span className="label">{d.domain}</span>
             {d.topics.map((t) => {
               const b = seen.get(t.topic)
               return (

@@ -82,7 +82,7 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
 
   return (
     <div className="wrap-read">
-      <h1 className="h-page">Review</h1>
+      <h1 className="d-lg">Review</h1>
       <p className="lede" style={{ marginTop: 10 }}>
         Everything you've answered, most recent first. Work through what you got wrong — that's where
         the marks are.

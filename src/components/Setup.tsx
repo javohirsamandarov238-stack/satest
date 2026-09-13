@@ -23,7 +23,7 @@ export default function Setup({ mode, initialTopics = [], onStart }: Props) {
 
   return (
     <div className="wrap">
-      <h1 className="h-page">{mode === 'test' ? 'Set up a timed test' : 'Set up a practice run'}</h1>
+      <h1 className="d-lg">{mode === 'test' ? 'Set up a timed test' : 'Set up a practice run'}</h1>
       <p className="lede" style={{ marginTop: 12 }}>
         {mode === 'test'
           ? 'Answers stay hidden until you submit, exactly like the real module.'

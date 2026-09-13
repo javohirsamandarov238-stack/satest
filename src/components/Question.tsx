@@ -169,7 +169,7 @@ export function Verdict({ q, selected }: { q: Question; selected: Letter | strin
           'This answer is confirmed against the official key. A written explanation for this one is still being added.'}
       </p>
       <div className="verdict-answer">
-        <span className="h-sub">Correct answer</span>
+        <span className="label">Correct answer</span>
         <strong>{String(q.correctAnswer).split(',')[0].trim()}</strong>
       </div>
     </div>

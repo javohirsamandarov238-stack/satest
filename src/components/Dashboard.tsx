@@ -16,7 +16,7 @@ export default function Dashboard({
   if (s.attempted === 0) {
     return (
       <div className="wrap">
-        <h1 className="h-page">Progress</h1>
+        <h1 className="d-lg">Progress</h1>
         <p className="lede" style={{ marginTop: 12, marginBottom: 28 }}>
           Nothing recorded yet.
         </p>
@@ -42,37 +42,37 @@ export default function Dashboard({
 
   return (
     <div className="wrap">
-      <h1 className="h-page">Progress</h1>
+      <h1 className="d-lg">Progress</h1>
 
-      <div className="stats">
+      <div className="stat-line">
         <div>
-          <div className="stat-figure">{pct(s.accuracy)}</div>
-          <div className="stat-label">accuracy</div>
+          <div className="figure-num">{pct(s.accuracy)}</div>
+          <div className="label">accuracy</div>
         </div>
         <div>
-          <div className="stat-figure tabular">
+          <div className="figure-num tabular">
             {s.correct}
             <small>/{s.correct + s.incorrect}</small>
           </div>
-          <div className="stat-label">correct answers</div>
+          <div className="label">correct answers</div>
         </div>
         <div>
-          <div className="stat-figure tabular">{s.streak}</div>
-          <div className="stat-label">in a row now · best {s.bestStreak}</div>
+          <div className="figure-num tabular">{s.streak}</div>
+          <div className="label">in a row now · best {s.bestStreak}</div>
         </div>
         <div>
-          <div className="stat-figure tabular">
+          <div className="figure-num tabular">
             {s.distinctQuestions}
             <small>/{TOTALS.all}</small>
           </div>
-          <div className="stat-label">questions seen</div>
+          <div className="label">questions seen</div>
         </div>
       </div>
 
       {graded.length > 0 && (
         <>
           <hr className="rule" />
-          <h2 className="h-sec">Recent form</h2>
+          <h2 className="d-md">Recent form</h2>
           <p className="meta" style={{ marginTop: 6, marginBottom: 14 }}>
             Your last {graded.length} graded answers, oldest first
           </p>
@@ -87,7 +87,7 @@ export default function Dashboard({
       {bySection.some((b) => b.attempted > 0) && (
         <>
           <hr className="rule" />
-          <h2 className="h-sec">By section</h2>
+          <h2 className="d-md">By section</h2>
           <div style={{ marginTop: 10 }}>
             {bySection
               .filter((b) => b.attempted > 0)
@@ -112,7 +112,7 @@ export default function Dashboard({
       )}
 
       <hr className="rule" />
-      <h2 className="h-sec">By skill</h2>
+      <h2 className="d-md">By skill</h2>
       <div style={{ marginTop: 10 }}>
         {s.byTopic.map((b) => (
           <div className="ledger-row" key={b.name}>
@@ -135,11 +135,11 @@ export default function Dashboard({
       {ranked.length > 0 && (
         <>
           <hr className="rule" />
-          <h2 className="h-sec">Where to spend your time</h2>
+          <h2 className="d-md">Where to spend your time</h2>
           <div className="row" style={{ alignItems: 'flex-start', gap: 56, marginTop: 16 }}>
             {weakest.length > 0 && (
               <div>
-                <h3 style={{ marginBottom: 8 }}>Weakest</h3>
+                <h3 className="d-sm" style={{ marginBottom: 8 }}>Weakest</h3>
                 {weakest.map((t) => (
                   <p key={t.name} style={{ margin: '0 0 5px', fontSize: '0.875rem' }}>
                     {t.name} <span className="meta tabular">{pct(t.accuracy)}</span>
@@ -149,7 +149,7 @@ export default function Dashboard({
             )}
             {strongest.length > 0 && (
               <div>
-                <h3 style={{ marginBottom: 8 }}>Strongest</h3>
+                <h3 className="d-sm" style={{ marginBottom: 8 }}>Strongest</h3>
                 {strongest.map((t) => (
                   <p key={t.name} style={{ margin: '0 0 5px', fontSize: '0.875rem' }}>
                     {t.name} <span className="meta tabular">{pct(t.accuracy)}</span>

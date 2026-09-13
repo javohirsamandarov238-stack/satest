@@ -75,32 +75,32 @@ export default function TestMode({
   if (submitted && reviewIndex === null) {
     return (
       <div className="wrap-read">
-        <h1 className="h-page">Test finished</h1>
-        <div className="stats">
+        <h1 className="d-lg">Test finished</h1>
+        <div className="stat-line">
           <div>
-            <div className="stat-figure">{pct(results.accuracy)}</div>
-            <div className="stat-label">accuracy on graded questions</div>
+            <div className="figure-num">{pct(results.accuracy)}</div>
+            <div className="label">accuracy on graded questions</div>
           </div>
           <div>
-            <div className="stat-figure tabular">
+            <div className="figure-num tabular">
               {results.right}<small>/{results.graded}</small>
             </div>
-            <div className="stat-label">correct</div>
+            <div className="label">correct</div>
           </div>
           <div>
-            <div className="stat-figure tabular">{results.blank}</div>
-            <div className="stat-label">left blank</div>
+            <div className="figure-num tabular">{results.blank}</div>
+            <div className="label">left blank</div>
           </div>
           {results.ungraded > 0 && (
             <div>
-              <div className="stat-figure tabular">{results.ungraded}</div>
-              <div className="stat-label">unverified, not graded</div>
+              <div className="figure-num tabular">{results.ungraded}</div>
+              <div className="label">unverified, not graded</div>
             </div>
           )}
         </div>
 
         <hr className="rule" />
-        <h2 className="h-sec">Every question</h2>
+        <h2 className="d-md">Every question</h2>
         <p className="meta" style={{ marginTop: 6, marginBottom: 14 }}>
           Open any one to read it again with the answer and reasoning.
         </p>
