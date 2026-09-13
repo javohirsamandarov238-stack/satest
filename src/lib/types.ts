@@ -48,8 +48,20 @@ export interface Attempt {
   ts: number
 }
 
+/** A session the student started and hasn't finished. Survives a refresh. */
+export interface OpenSession {
+  mode: 'practice' | 'test'
+  ids: string[]
+  index: number
+  answered: number
+  minutes: number
+  startedAt: number
+  label: string
+}
+
 export interface Progress {
   attempts: Attempt[]
   flagged: string[]
   theme: 'light' | 'dark'
+  open: OpenSession | null
 }

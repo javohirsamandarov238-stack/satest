@@ -1228,3 +1228,198 @@ button.wordmark {
 button.wordmark:hover {
   opacity: 0.75;
 }
+
+/* ══ dashboard ══════════════════════════════════════════════════
+   Information density up, hero footprint down. The welcome band is
+   two columns so the actions sit beside the greeting rather than
+   below it, which is most of what reclaims the first viewport. */
+
+.dash-welcome {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--line);
+}
+.dash-block {
+  margin-top: 40px;
+}
+.dash-block > .label {
+  display: block;
+  margin-bottom: 16px;
+}
+
+/* today — three compact rows, not billboards */
+.today {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.today-item {
+  display: block;
+  text-align: left;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: color var(--t1), background-color var(--t1), box-shadow var(--t1);
+}
+.today-item:hover:not(:disabled) {
+  background-color: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+.today-item:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.today-item > .label {
+  display: block;
+}
+.today-figure {
+  display: block;
+  margin-top: 12px;
+  font-size: 2.15rem;
+  color: var(--text);
+}
+.today-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8125rem;
+  color: var(--text-3);
+}
+.today-go {
+  display: block;
+  margin-top: 16px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.today-item:disabled .today-go {
+  color: var(--text-3);
+}
+
+/* continue */
+.continue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  background: var(--surface);
+}
+
+/* progress + weak areas share the row */
+.dash-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 72px;
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px 24px;
+  margin-top: 20px;
+}
+.figures .figure-num {
+  display: block;
+  font-size: 1.85rem;
+  color: var(--text);
+}
+.figures .figure-num.lead {
+  font-size: 3.1rem;
+}
+.figures .label {
+  display: block;
+  margin-top: 6px;
+}
+
+.weak-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 0;
+  transition: opacity var(--t1);
+}
+.weak-row:hover {
+  opacity: 0.72;
+}
+.weak-name {
+  font-family: var(--read);
+  font-size: 1rem;
+  color: var(--text);
+}
+.weak-num {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.weak-bar {
+  grid-column: 1 / -1;
+}
+
+/* activity */
+.activity {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 24px;
+  align-items: baseline;
+  width: 100%;
+  text-align: left;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  transition: opacity var(--t1);
+}
+.activity:hover {
+  opacity: 0.72;
+}
+.activity-name {
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.activity-topics {
+  color: var(--text-3);
+}
+.activity-score {
+  font-size: 0.875rem;
+  color: var(--text-2);
+}
+.activity-when {
+  font-size: 0.8125rem;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .today {
+    grid-template-columns: 1fr;
+  }
+  .dash-split {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .figures {
+    gap: 24px 16px;
+  }
+  .activity {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .activity-when {
+    grid-column: 1 / -1;
+  }
+}
+
+/* The dashboard is dense by intent, so it uses a tighter section
+   rhythm than the editorial pages. */
+.dash .rule {
+  margin: 40px 0 36px;
+}
+.dash .dash-block:first-of-type {
+  margin-top: 36px;
+}

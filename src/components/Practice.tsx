@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Letter, Question } from '../lib/types'
 import { AnswerInput, QuestionBody, QuestionHeader, SourceNote, Verdict } from './Question'
 
@@ -7,13 +7,18 @@ interface Props {
   flagged: string[]
   onToggleFlag: (id: string) => void
   onRecord: (id: string, choice: Letter | string | null) => void
+  onAdvance?: (index: number, answered: number) => void
   onExit: () => void
 }
 
-export default function Practice({ questions, flagged, onToggleFlag, onRecord, onExit }: Props) {
+export default function Practice({ questions, flagged, onToggleFlag, onRecord, onAdvance, onExit }: Props) {
   const [index, setIndex] = useState(0)
   const [picked, setPicked] = useState<Record<string, Letter | string>>({})
   const [checked, setChecked] = useState<Record<string, true>>({})
+
+  useEffect(() => {
+    onAdvance?.(index, Object.keys(checked).length)
+  }, [index, checked, onAdvance])
 
   const q = questions[index]
   const selected = picked[q.id] ?? null

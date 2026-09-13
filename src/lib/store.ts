@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { Attempt, Letter, Progress } from './types'
+import type { Attempt, Letter, OpenSession, Progress } from './types'
 import { BY_ID } from './bank'
 import { isCorrect } from '../components/Question'
 
 const KEY = 'sat-rw-progress-v1'
 
-const EMPTY: Progress = { attempts: [], flagged: [], theme: 'dark' }
+const EMPTY: Progress = { attempts: [], flagged: [], theme: 'dark', open: null }
 
 function read(): Progress {
   try {
@@ -16,6 +16,7 @@ function read(): Progress {
       attempts: Array.isArray(parsed.attempts) ? parsed.attempts : [],
       flagged: Array.isArray(parsed.flagged) ? parsed.flagged : [],
       theme: parsed.theme === 'light' ? 'light' : 'dark',
+      open: (parsed.open as OpenSession | null) ?? null,
     }
   } catch {
     return EMPTY
@@ -72,11 +73,19 @@ export function useProgress() {
     setProgress((p) => ({ ...p, theme: p.theme === 'dark' ? 'light' : 'dark' }))
   }, [])
 
-  const reset = useCallback(() => {
-    setProgress((p) => ({ attempts: [], flagged: [], theme: p.theme }))
+  const setOpen = useCallback((open: OpenSession | null) => {
+    setProgress((p) => ({ ...p, open }))
   }, [])
 
-  return { progress, record, toggleFlag, toggleTheme, reset }
+  const advanceOpen = useCallback((index: number, answered: number) => {
+    setProgress((p) => (p.open ? { ...p, open: { ...p.open, index, answered } } : p))
+  }, [])
+
+  const reset = useCallback(() => {
+    setProgress((p) => ({ attempts: [], flagged: [], theme: p.theme, open: null }))
+  }, [])
+
+  return { progress, record, toggleFlag, toggleTheme, reset, setOpen, advanceOpen }
 }
 
 /* ---------- derived statistics ---------- */
@@ -170,4 +179,57 @@ export function latestByQuestion(attempts: Attempt[]): Map<string, Attempt> {
 
 export function pct(v: number | null): string {
   return v === null ? '—' : `${Math.round(v * 100)}%`
+}
+
+
+/* ---------- sessions, derived from the attempt log ---------- */
+
+export interface SessionSummary {
+  at: number
+  mode: 'practice' | 'test'
+  total: number
+  correct: number
+  graded: number
+  topics: string[]
+}
+
+/** Attempts more than 30 minutes apart are treated as separate sittings. */
+export function recentSessions(attempts: Attempt[], gapMs = 30 * 60 * 1000): SessionSummary[] {
+  const out: SessionSummary[] = []
+  let cur: Attempt[] = []
+  const flush = () => {
+    if (!cur.length) return
+    const graded = cur.filter((a) => a.correct !== null)
+    out.push({
+      at: cur[cur.length - 1].ts,
+      mode: cur[0].mode,
+      total: cur.length,
+      graded: graded.length,
+      correct: graded.filter((a) => a.correct).length,
+      topics: [...new Set(cur.map((a) => a.topic))],
+    })
+    cur = []
+  }
+  for (const a of attempts) {
+    if (cur.length && (a.ts - cur[cur.length - 1].ts > gapMs || a.mode !== cur[0].mode)) flush()
+    cur.push(a)
+  }
+  flush()
+  return out.reverse()
+}
+
+/** Questions answered wrong on the most recent attempt. */
+export function outstandingMistakes(attempts: Attempt[]): string[] {
+  const latest = latestByQuestion(attempts)
+  return [...latest.values()].filter((a) => a.correct === false).map((a) => a.id)
+}
+
+export function relativeDay(ts: number): string {
+  const d = new Date(ts)
+  const today = new Date()
+  const days = Math.floor((+new Date(today.toDateString()) - +new Date(d.toDateString())) / 86400000)
+  if (days <= 0) return 'Today'
+  if (days === 1) return 'Yesterday'
+  if (days < 7) return `${days} days ago`
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
