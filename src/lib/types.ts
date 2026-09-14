@@ -61,6 +61,8 @@ export interface OpenSession {
 
 export interface Progress {
   attempts: Attempt[]
+  /** answered vocabulary prompts */
+  words: { id: string; correct: boolean; ts: number }[]
   flagged: string[]
   theme: 'light' | 'dark'
   open: OpenSession | null

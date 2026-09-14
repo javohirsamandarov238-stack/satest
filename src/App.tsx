@@ -10,6 +10,7 @@ import TestMode from './components/TestMode'
 import Review from './components/Review'
 import Dashboard from './components/Dashboard'
 import Home from './components/Home'
+import Vocabulary from './components/Vocabulary'
 import {
   IconMoon,
   IconOverview,
@@ -21,11 +22,12 @@ import {
   Monogram,
 } from './components/Icons'
 
-type View = 'home' | 'practice' | 'test' | 'review' | 'progress'
+type View = 'home' | 'practice' | 'vocabulary' | 'test' | 'review' | 'progress'
 
 const NAV: { key: View; label: string; Icon: (p: { size?: number }) => JSX.Element }[] = [
   { key: 'home', label: 'Overview', Icon: IconOverview },
   { key: 'practice', label: 'Practice', Icon: IconPractice },
+  { key: 'vocabulary', label: 'Vocabulary', Icon: IconReview },
   { key: 'test', label: 'Test', Icon: IconTest },
   { key: 'review', label: 'Review', Icon: IconReview },
   { key: 'progress', label: 'Progress', Icon: IconProgress },
@@ -37,7 +39,8 @@ interface Session {
 }
 
 export default function App() {
-  const { progress, record, toggleFlag, toggleTheme, reset, setOpen, advanceOpen } = useProgress()
+  const { progress, record, recordWord, toggleFlag, toggleTheme, reset, setOpen, advanceOpen } =
+    useProgress()
   const [view, setView] = useState<View>('home')
   const [session, setSession] = useState<Session | null>(null)
   const [presetTopics, setPresetTopics] = useState<string[]>([])
@@ -131,6 +134,7 @@ export default function App() {
             attempts={progress.attempts}
             flagged={progress.flagged}
             open={progress.open}
+            words={progress.words}
             onGoto={goto}
             onPractise={practiseTopic}
             onResume={resume}
@@ -164,6 +168,10 @@ export default function App() {
           ) : (
             <Setup mode="test" onStart={start} />
           ))}
+
+        {view === 'vocabulary' && (
+          <Vocabulary attempts={progress.words} onRecord={recordWord} />
+        )}
 
         {view === 'review' && (
           <Review attempts={progress.attempts} flagged={progress.flagged} onToggleFlag={toggleFlag} />

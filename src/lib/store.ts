@@ -5,7 +5,7 @@ import { isCorrect } from '../components/Question'
 
 const KEY = 'sat-rw-progress-v1'
 
-const EMPTY: Progress = { attempts: [], flagged: [], theme: 'dark', open: null }
+const EMPTY: Progress = { attempts: [], words: [], flagged: [], theme: 'dark', open: null }
 
 function read(): Progress {
   try {
@@ -14,6 +14,7 @@ function read(): Progress {
     const parsed = JSON.parse(raw) as Partial<Progress>
     return {
       attempts: Array.isArray(parsed.attempts) ? parsed.attempts : [],
+      words: Array.isArray(parsed.words) ? parsed.words : [],
       flagged: Array.isArray(parsed.flagged) ? parsed.flagged : [],
       theme: parsed.theme === 'light' ? 'light' : 'dark',
       open: (parsed.open as OpenSession | null) ?? null,
@@ -73,6 +74,10 @@ export function useProgress() {
     setProgress((p) => ({ ...p, theme: p.theme === 'dark' ? 'light' : 'dark' }))
   }, [])
 
+  const recordWord = useCallback((id: string, correct: boolean) => {
+    setProgress((p) => ({ ...p, words: [...p.words, { id, correct, ts: Date.now() }] }))
+  }, [])
+
   const setOpen = useCallback((open: OpenSession | null) => {
     setProgress((p) => ({ ...p, open }))
   }, [])
@@ -82,10 +87,10 @@ export function useProgress() {
   }, [])
 
   const reset = useCallback(() => {
-    setProgress((p) => ({ attempts: [], flagged: [], theme: p.theme, open: null }))
+    setProgress((p) => ({ attempts: [], words: [], flagged: [], theme: p.theme, open: null }))
   }, [])
 
-  return { progress, record, toggleFlag, toggleTheme, reset, setOpen, advanceOpen }
+  return { progress, record, recordWord, toggleFlag, toggleTheme, reset, setOpen, advanceOpen }
 }
 
 /* ---------- derived statistics ---------- */

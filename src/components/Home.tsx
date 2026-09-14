@@ -8,14 +8,17 @@ import {
   relativeDay,
 } from '../lib/store'
 import type { Attempt, OpenSession } from '../lib/types'
+import { WORDS, buildRecords, dueWords } from '../lib/vocab'
+import type { WordAttempt } from '../lib/vocab'
 import { useCountUp } from '../lib/motion'
 
-type View = 'home' | 'practice' | 'test' | 'review' | 'progress'
+type View = 'home' | 'practice' | 'vocabulary' | 'test' | 'review' | 'progress'
 
 interface Props {
   attempts: Attempt[]
   flagged: string[]
   open: OpenSession | null
+  words: WordAttempt[]
   onGoto: (v: View) => void
   onPractise: (topic: string) => void
   onResume: () => void
@@ -33,6 +36,7 @@ export default function Home({
   attempts,
   flagged,
   open,
+  words,
   onGoto,
   onPractise,
   onResume,
@@ -42,6 +46,8 @@ export default function Home({
   const mistakes = outstandingMistakes(attempts)
   const sessions = recentSessions(attempts)
   const unseen = TOTALS.all - stats.distinctQuestions
+  const wordRecords = buildRecords(words)
+  const wordsDue = dueWords(wordRecords).length
   const solved = useCountUp(stats.correct + stats.incorrect)
 
   // Weak areas: skills with enough attempts to mean something, worst first.
@@ -88,6 +94,15 @@ export default function Home({
             <span className="today-figure figure-num">{unseen.toLocaleString()}</span>
             <span className="today-note">questions you haven't seen</span>
             <span className="today-go">Start →</span>
+          </button>
+
+          <button className="today-item" onClick={() => onGoto('vocabulary')}>
+            <span className="label">Vocabulary</span>
+            <span className="today-figure figure-num">{Math.min(wordsDue, WORDS.length).toLocaleString()}</span>
+            <span className="today-note">
+              {wordsDue === 1 ? 'word due' : 'words due'}
+            </span>
+            <span className="today-go">Review →</span>
           </button>
 
           <button
