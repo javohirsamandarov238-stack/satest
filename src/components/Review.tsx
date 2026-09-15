@@ -84,7 +84,7 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
     <div className="wrap-read">
       <h1 className="d-lg">Review</h1>
       <p className="lede" style={{ marginTop: 10 }}>
-        Everything you've answered, most recent first. Work through what you got wrong — that's where
+        Everything you've answered, most recent first. Work through what you got wrong, that's where
         the marks are.
       </p>
 
@@ -137,14 +137,14 @@ export default function Review({ attempts, flagged, onToggleFlag }: Props) {
                   {attempt?.correct === true && <span className="dot mark-good">correct · {attempt.choice}</span>}
                   {attempt?.correct === false && (
                     <span className="dot mark-bad">
-                      chose {attempt.choice ?? '—'}, answer is {q.correctAnswer}
+                      chose {attempt.choice ?? ''}, answer is {q.correctAnswer}
                     </span>
                   )}
                   {attempt?.correct === null && <span>answer not verified</span>}
                   {!attempt && <span>not attempted</span>}
                   {flagged.includes(q.id) && <span className="dot mark-flag">flagged</span>}
                 </div>
-                <div className="reviewitem-q">{q.stem || `${q.topic} — see question image`}</div>
+                <div className="reviewitem-q">{q.stem || `${q.topic}, see question image`}</div>
                 <button className="btn btn-sm" onClick={() => setOpen(i)}>
                   Open question
                 </button>

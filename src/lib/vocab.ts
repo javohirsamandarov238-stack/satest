@@ -23,8 +23,8 @@ export const WORDS = raw as Word[]
 export const WORD_BY_ID = new Map(WORDS.map((w) => [w.id, w]))
 export const SOURCES = [...new Set(WORDS.map((w) => w.source))]
 
-export type Mastery = 'New' | 'Learning' | 'Familiar' | 'Strong' | 'Mastered'
-export const MASTERY: Mastery[] = ['New', 'Learning', 'Familiar', 'Strong', 'Mastered']
+export type Mastery = 'Learning' | 'Familiar' | 'Strong' | 'Mastered'
+export const MASTERY: Mastery[] = ['Learning', 'Familiar', 'Strong', 'Mastered']
 
 export interface WordRecord {
   seen: number
@@ -44,7 +44,6 @@ export interface WordRecord {
  * that missed words recur often and solid ones fade into the background.
  */
 const INTERVALS: Record<Mastery, number> = {
-  New: 0,
   Learning: 10 * 60 * 1000, // 10 minutes
   Familiar: 24 * 60 * 60 * 1000, // a day
   Strong: 4 * 24 * 60 * 60 * 1000, // four days
@@ -65,7 +64,7 @@ export function buildRecords(attempts: WordAttempt[]): Map<string, WordRecord> {
   for (const a of attempts) {
     const r =
       m.get(a.id) ??
-      ({ seen: 0, right: 0, wrong: 0, streak: 0, last: 0, mastery: 'New', due: 0 } as WordRecord)
+      ({ seen: 0, right: 0, wrong: 0, streak: 0, last: 0, mastery: 'Learning', due: 0 } as WordRecord)
     r.seen += 1
     r.last = a.ts
     if (a.correct) {
@@ -82,8 +81,9 @@ export function buildRecords(attempts: WordAttempt[]): Map<string, WordRecord> {
   return m
 }
 
-export function masteryOf(records: Map<string, WordRecord>, id: string): Mastery {
-  return records.get(id)?.mastery ?? 'New'
+/** Undefined means the word has no history yet. */
+export function masteryOf(records: Map<string, WordRecord>, id: string): Mastery | undefined {
+  return records.get(id)?.mastery
 }
 
 /** Words worth showing now: overdue first, then never-seen. */
@@ -137,4 +137,15 @@ export function buildPrompt(target: Word, pool: Word[] = WORDS) {
     ;[options[i], options[j]] = [options[j], options[i]]
   }
   return { target, options, answer: options.findIndex((o) => o.id === target.id) }
+}
+
+
+/**
+ * One word to meet on each visit. Chosen from those without history, and
+ * stable for the whole visit so it doesn't change as you move around.
+ */
+export function wordOfTheVisit(records: Map<string, WordRecord>): Word {
+  const fresh = WORDS.filter((w) => !records.has(w.id))
+  const pool = fresh.length ? fresh : WORDS
+  return pool[Math.floor(Math.random() * pool.length)]
 }

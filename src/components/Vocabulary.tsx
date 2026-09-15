@@ -7,6 +7,7 @@ import {
   dueWords,
   masteryOf,
   searchWords,
+  wordOfTheVisit,
 } from '../lib/vocab'
 import type { Mastery, Word, WordAttempt } from '../lib/vocab'
 
@@ -15,21 +16,23 @@ interface Props {
   onRecord: (id: string, correct: boolean) => void
 }
 
-type Tab = 'review' | 'browse'
-
 export default function Vocabulary({ attempts, onRecord }: Props) {
   const records = useMemo(() => buildRecords(attempts), [attempts])
   const due = useMemo(() => dueWords(records), [records])
 
-  const [tab, setTab] = useState<Tab>('review')
   const [queue, setQueue] = useState<Word[] | null>(null)
   const [at, setAt] = useState(0)
 
   const counts = useMemo(() => {
-    const c: Record<Mastery, number> = { New: 0, Learning: 0, Familiar: 0, Strong: 0, Mastered: 0 }
-    for (const w of WORDS) c[masteryOf(records, w.id)] += 1
+    const c: Record<Mastery, number> = { Learning: 0, Familiar: 0, Strong: 0, Mastered: 0 }
+    for (const w of WORDS) {
+      const m = masteryOf(records, w.id)
+      if (m) c[m] += 1
+    }
     return c
   }, [records])
+
+  const featured = useMemo(() => wordOfTheVisit(records), [])
 
   if (queue) {
     return (
@@ -69,15 +72,33 @@ export default function Vocabulary({ attempts, onRecord }: Props) {
             →
           </span>
         </button>
-        <button className="btn" onClick={() => setTab(tab === 'browse' ? 'review' : 'browse')}>
-          {tab === 'browse' ? 'Hide the list' : 'Browse all words'}
-        </button>
+
+      </div>
+
+      <hr className="rule" />
+
+      <span className="label">A word for this visit</span>
+      <div className="featured">
+        <div>
+          <span className="featured-word">{featured.word}</span>
+          {featured.pos && <span className="wordrow-pos"> {featured.pos}</span>}
+          <p className="featured-def">{featured.definition}</p>
+          {featured.example && <p className="wordrow-ex">{featured.example}</p>}
+          {(featured.synonym || featured.antonym) && (
+            <p className="meta" style={{ marginTop: 12 }}>
+              {featured.synonym && <>Similar: {featured.synonym}</>}
+              {featured.synonym && featured.antonym && ' · '}
+              {featured.antonym && <>Opposite: {featured.antonym}</>}
+            </p>
+          )}
+        </div>
+        <span className="wordrow-state">{featured.difficulty}</span>
       </div>
 
       <hr className="rule" />
 
       <span className="label">Mastery</span>
-      <div className="figures" style={{ gridTemplateColumns: 'repeat(5, minmax(0,1fr))' }}>
+      <div className="figures" style={{ gridTemplateColumns: 'repeat(4, minmax(0,1fr))' }}>
         {MASTERY.map((m) => (
           <div key={m}>
             <span className="figure-num tabular">{counts[m].toLocaleString()}</span>
@@ -86,7 +107,7 @@ export default function Vocabulary({ attempts, onRecord }: Props) {
         ))}
       </div>
 
-      {tab === 'browse' && <WordList records={records} />}
+      <WordList records={records} />
     </div>
   )
 }
@@ -146,7 +167,7 @@ function WordList({ records }: { records: ReturnType<typeof buildRecords> }) {
                 <p className="wordrow-def">{w.definition}</p>
                 {w.example && <p className="wordrow-ex">{w.example}</p>}
               </div>
-              <span className="wordrow-state">{masteryOf(records, w.id)}</span>
+              <span className="wordrow-state">{masteryOf(records, w.id) ?? ''}</span>
             </div>
           ))}
           {list.length >= 120 && (
@@ -204,7 +225,7 @@ function VocabSession({
           <div className="qcrumb" style={{ marginTop: 8 }}>
             <span>{word.difficulty.toLowerCase()}</span>
             <i>·</i>
-            <span>{masteryOf(records, word.id)}</span>
+            <span>{masteryOf(records, word.id) ?? 'not yet seen'}</span>
           </div>
         </div>
         <button className="flagbtn" onClick={onDone}>
@@ -251,7 +272,7 @@ function VocabSession({
           <div className="verdict-head">{right ? 'Correct' : 'Not quite'}</div>
           <p className="verdict-body">
             <strong style={{ color: 'var(--text)', fontWeight: 500 }}>{word.word}</strong>
-            {word.pos ? ` · ${word.pos}` : ''} — {word.definition}
+            {word.pos ? ` · ${word.pos}` : ''}, {word.definition}
           </p>
           {word.example && (
             <p className="verdict-body" style={{ marginTop: 14, fontStyle: 'italic' }}>

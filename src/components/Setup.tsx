@@ -24,7 +24,7 @@ export default function Setup({ mode, initialTopics = [], onStart }: Props) {
   /**
    * The count is held as the raw string the user is typing, so the field can
    * legitimately be empty or briefly hold an out-of-range value. It is only
-   * normalised when editing ends — on blur, or when the session starts.
+   * normalised when editing ends, on blur, or when the session starts.
    */
   const [count, setCount] = useState(mode === 'test' ? '27' : '25')
   const [notice, setNotice] = useState<string | null>(null)
@@ -132,7 +132,7 @@ export default function Setup({ mode, initialTopics = [], onStart }: Props) {
       </div>
 
       <div className="field">
-        <label>Skills — pick any number, or leave them all off to draw from everything</label>
+        <label>Skills, pick any number, or leave them all off to draw from everything</label>
         {SECTION_GROUPS.filter((g) => !section || g.section === section).map((g) =>
           g.domains.map((d) => (
             <div key={d.domain} style={{ marginBottom: 20 }}>

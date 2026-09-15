@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Filter, Order } from './lib/bank'
 import { BY_ID, orderQuestions, selectQuestions, shuffle } from './lib/bank'
 import { computeStats, pct, useProgress } from './lib/store'
@@ -95,6 +95,31 @@ export default function App() {
 
   const focused = (view === 'practice' || view === 'test') && session !== null
 
+  /* A refresh should land at the top, not wherever the browser left off. */
+  useEffect(() => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
+    window.scrollTo(0, 0)
+  }, [])
+
+  /* Changing page also returns to the top. */
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [view, session])
+
+  /* The header tucks away while you scroll down and returns on the way up. */
+  const [tucked, setTucked] = useState(false)
+  const lastY = useRef(0)
+  useEffect(() => {
+    function onScroll() {
+      const y = window.scrollY
+      const down = y > lastY.current
+      setTucked(down && y > 120)
+      lastY.current = y
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <div className={focused ? 'shell focused' : 'shell'}>
       <div className="ambient" aria-hidden="true">
@@ -103,11 +128,11 @@ export default function App() {
         <i />
         <u />
       </div>
-      <header className="topbar">
+      <header className={tucked ? 'topbar tucked' : 'topbar'}>
         <button
           className="wordmark"
           onClick={() => goto('home')}
-          aria-label="SATest — back to overview"
+          aria-label="SATest, back to overview"
         >
           SATest<i />
         </button>

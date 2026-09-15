@@ -131,7 +131,7 @@ export default function TestMode({
                     {state === 'unverified' && 'answer not verified'}
                   </span>
                 </div>
-                <div className="reviewitem-q">{q.stem || `${q.topic} — see question image`}</div>
+                <div className="reviewitem-q">{q.stem || `${q.topic}, see question image`}</div>
                 <button className="btn btn-sm" onClick={() => setReviewIndex(i)}>
                   Open question
                 </button>

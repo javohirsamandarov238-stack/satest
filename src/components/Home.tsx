@@ -189,7 +189,7 @@ export default function Home({
           {stats.attempted === 0 ? (
             <p className="support" style={{ marginTop: 16, maxWidth: '46ch' }}>
               Nothing recorded yet. Answer a few questions and your accuracy, streak and weakest
-              skills appear here — stored in this browser, so a refresh won't lose them.
+              skills appear here, stored in this browser, so a refresh won't lose them.
             </p>
           ) : (
             <div className="figures">
