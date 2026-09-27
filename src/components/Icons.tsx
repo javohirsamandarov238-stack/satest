@@ -113,6 +113,47 @@ export const IconClose = (p: IconProps) => (
   </Svg>
 )
 
+export const IconFlame = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M8.5 2C8.5 2 9.5 4.5 9.5 6C9.5 7.5 8.5 8 8.5 8C8.5 8 7.5 6.5 7.5 5.5C5.5 7 4 9 4 11C4 13.2 5.8 15 8 15C10.2 15 12 13.2 12 11C12 7.5 8.5 2 8.5 2Z" />
+  </Svg>
+)
+
+export const IconTarget = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="8" cy="8" r="6" />
+    <circle cx="8" cy="8" r="3" />
+    <circle cx="8" cy="8" r="1" fill="currentColor" />
+  </Svg>
+)
+
+export const IconZap = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M8.5 1.5L2.5 9h5l-1 5.5L13.5 7h-5l1-5.5z" />
+  </Svg>
+)
+
+export const IconBookOpen = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M2 3.5C3.5 3 6 3 8 4.5V14C6 12.5 3.5 12.5 2 13V3.5Z" />
+    <path d="M14 3.5C12.5 3 10 3 8 4.5V14C10 12.5 12.5 12.5 14 13V3.5Z" />
+  </Svg>
+)
+
+export const IconLayers = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M8 2L14 5L8 8L2 5L8 2Z" />
+    <path d="M2 8.5L8 11.5L14 8.5" />
+    <path d="M2 12L8 15L14 12" />
+  </Svg>
+)
+
+export const IconTrendingUp = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M14 4H9.5M14 4V8.5M14 4L8.5 9.5L5.5 6.5L1.5 10.5" />
+  </Svg>
+)
+
 /** The product mark: a 2×2 answer grid with the first bubble filled in. */
 export function Monogram({ size = 26 }: { size?: number }) {
   return (

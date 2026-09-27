@@ -15,6 +15,7 @@ export default function Practice({ questions, flagged, onToggleFlag, onRecord, o
   const [index, setIndex] = useState(0)
   const [picked, setPicked] = useState<Record<string, Letter | string>>({})
   const [checked, setChecked] = useState<Record<string, true>>({})
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   useEffect(() => {
     onAdvance?.(index, Object.keys(checked).length)
@@ -32,29 +33,35 @@ export default function Practice({ questions, flagged, onToggleFlag, onRecord, o
   }
 
   function go(delta: number) {
-    setIndex((i) => Math.min(questions.length - 1, Math.max(0, i + delta)))
+    setIsTransitioning(true)
+    setTimeout(() => {
+      setIndex((i) => Math.min(questions.length - 1, Math.max(0, i + delta)))
+      setIsTransitioning(false)
+    }, 200)
   }
 
   return (
     <div className="wrap-read">
-      <QuestionHeader
-        q={q}
-        index={index}
-        total={questions.length}
-        flagged={flagged.includes(q.id)}
-        onToggleFlag={() => onToggleFlag(q.id)}
-      />
+      <div className={isTransitioning ? 'question-container transitioning' : 'question-container'} key={q.id}>
+        <QuestionHeader
+          q={q}
+          index={index}
+          total={questions.length}
+          flagged={flagged.includes(q.id)}
+          onToggleFlag={() => onToggleFlag(q.id)}
+        />
 
-      <QuestionBody q={q} />
+        <QuestionBody q={q} />
 
-      <AnswerInput
-        q={q}
-        selected={selected}
-        onSelect={(a) => setPicked((p) => ({ ...p, [q.id]: a }))}
-        revealed={isChecked}
-      />
+        <AnswerInput
+          q={q}
+          selected={selected}
+          onSelect={(a) => setPicked((p) => ({ ...p, [q.id]: a }))}
+          revealed={isChecked}
+        />
 
-      {isChecked && <Verdict q={q} selected={selected} />}
+        {isChecked && <Verdict q={q} selected={selected} />}
+      </div>
 
       <div className="actions">
         {!isChecked ? (
@@ -76,11 +83,11 @@ export default function Practice({ questions, flagged, onToggleFlag, onRecord, o
             </span>
           </button>
         )}
-        <button className="btn btn-quiet" onClick={() => go(-1)} disabled={index === 0}>
+        <button className="btn btn-quiet" onClick={() => go(-1)} disabled={index === 0 || isTransitioning}>
           Previous
         </button>
         {!last && !isChecked && (
-          <button className="btn btn-quiet" onClick={() => go(1)}>
+          <button className="btn btn-quiet" onClick={() => go(1)} disabled={isTransitioning}>
             Skip
           </button>
         )}

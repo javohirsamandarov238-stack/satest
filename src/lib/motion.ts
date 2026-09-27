@@ -34,6 +34,41 @@ export function useCountUp(target: number, duration = 620): number {
   return value
 }
 
+/**
+ * Observes every element matching `selector` inside the document and toggles
+ * the `visible` class once it enters the viewport. Elements that are already
+ * visible on mount (e.g. the hero) should use `.rise-eager` instead.
+ *
+ * Respects `prefers-reduced-motion` — applies instantly without transition.
+ */
+export function useScrollReveal(selector: string): void {
+  useEffect(() => {
+    if (reduced()) {
+      // Reduced motion: make everything visible instantly, no animation
+      document.querySelectorAll(selector).forEach((el) => {
+        el.classList.add('visible')
+      })
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible')
+            observer.unobserve(entry.target) // one-shot reveal
+          }
+        })
+      },
+      { threshold: 0.15 },
+    )
+
+    document.querySelectorAll(selector).forEach((el) => observer.observe(el))
+
+    return () => observer.disconnect()
+  }, [selector])
+}
+
 /** Staggered entrance delay, in ms, for the nth item in a list. */
 export const stagger = (i: number, step = 34, cap = 8) =>
   `${Math.min(i, cap) * step}ms`
